@@ -60,7 +60,7 @@ class User(AbstractUser):
     is_superuser = models.BooleanField(default=False, verbose_name='Суперпользователь?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
     is_active = models.BooleanField(default=True, verbose_name='Активен?')
-    date_joined = models.DateTimeField(auto_now=False, verbose_name='дата создания аккаунта')
+    date_joined = models.DateTimeField(auto_now=True, verbose_name='дата создания аккаунта')
 
     # добавление связи с профилем
     profile = models.OneToOneField(Profile, on_delete=models.PROTECT, verbose_name='id профиля')
@@ -80,7 +80,7 @@ class Question(models.Model):
     text = models.TextField(max_length=4096, verbose_name='текст')
     likes = models.IntegerField(default=0, verbose_name='количество лайков на вопросе')
     answers = models.IntegerField(default=0, verbose_name='количество ответов на вопрос')
-    send = models.DateTimeField(auto_now=False, verbose_name='время отправки')
+    send = models.DateTimeField(auto_now=True, verbose_name='время отправки')
     profile = models.ForeignKey(Profile, on_delete=models.PROTECT, verbose_name='id профиля')
     
 
@@ -90,7 +90,7 @@ class Answer(models.Model):
     text = models.TextField(max_length=4096, verbose_name='текст')
     likes = models.IntegerField(default=0, verbose_name='количество лайков на ответе')
     help_count = models.IntegerField(default=0, verbose_name='сколько раз помог ответ')
-    send = models.DateTimeField(auto_now=False, verbose_name='время отправки')
+    send = models.DateTimeField(auto_now=True, verbose_name='время отправки')
     profile = models.ForeignKey(Profile, on_delete=models.PROTECT, verbose_name='id профиля')
     question = models.ForeignKey(Question, on_delete=models.PROTECT, verbose_name='id вопроса')
 
