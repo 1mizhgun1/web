@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <form method="post" class="register-form">
+        {% csrf_token %}
+        <h1>Registraion</h1>
+        <div class="row">
+            <div class="col-3">
+                <h5>Login</h5>
+            </div>
+            <div class="col-7">
+                <input type="text" class="input-register-login" maxlength="64" name="login" placeholder="Enter login" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <h5>Email</h5>
+            </div>
+            <div class="col-7">
+                <input type="text" class="input-register-email" maxlength="64" name="email" placeholder="Enter email" required>
+            {% if is_wrong_email %}
+                <h6 class="wrong-email">Sorry, email already registered!</h6>
+            {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <h5>NickName</h5>
+            </div>
+            <div class="col-7">
+                <input type="text" class="input-register-username" maxlength="64" name="username" placeholder="Enter nickname" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <h5>Password</h5>
+            </div>
+            <div class="col-7">
+                <input type="password" class="input-login-password" maxlength="64" name="password" placeholder="Enter password" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <h5>Repeat password</h5>
+            </div>
+            <div class="col-7">
+                <input type="password" class="input-login-repeat-password" maxlength="64" name="repeat-password" placeholder="Enter password again" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <h5>Upload avatar</h5>
+            </div>
+            <div class="col-7">
+                <img class="input-register-ava" src="{% static 'img/ava.jpg' %}" alt="ava">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-7">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="register-new-ava">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-7">
+                <button id="register-button" class="button btn-primary" type="submit">Register!</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block user %}
+    <a href="{% url 'login_url' %}" class="head-login">log in</a>
+    <a href="{% url 'register_url' %}" class="head-register">register</a>
+{% endblock %}

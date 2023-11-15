@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <form method="post" class="login-form">
+        {% csrf_token %}
+        <h1>Log In</h1>
+        <div class="row">
+            <div class="col-2">
+                <h5>Login</h5>
+            </div>
+            <div class="col-8">
+                <input type="text" class="input-login-login" maxlength="64" name="login" placeholder="Enter login" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <h5>Password</h5>
+            </div>
+            <div class="col-8">
+                <input type="password" class="input-login-password" maxlength="64" name="password" placeholder="Enter password" required>
+            {% if is_wrong_password %}
+                <h6 class="wrong-password">This password is wrong!</h6>
+            {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <button id="login-button" class="button btn-primary" type="submit">Log in!</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <a href="{% url 'register_url' %}"><h5>create new account</h5></a>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block user %}
+    <a href="{% url 'login_url' %}" class="head-login">log in</a>
+    <a href="{% url 'register_url' %}" class="head-register">register</a>
+{% endblock %}

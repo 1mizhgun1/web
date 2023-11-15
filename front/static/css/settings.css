@@ -1,0 +1,30 @@
+.page-content > .settings-form {
+    padding-bottom: 30px;
+}
+
+.page-content > .settings-form > .row {
+    margin-top: 30px;
+}
+
+.page-content > .settings-form > .row > .col-2 > h5 {
+    font-weight: 400;
+}
+
+.page-content > .settings-form > .row > .col-8 > input {
+    width: 100%;
+}
+
+.input-settings-ava {
+    width: 120px;
+    height: auto;
+    border: 1px #4fae10 solid;
+    border-radius: 10px;
+}
+
+#settings-button {
+    margin-bottom: 30px;
+    border-radius: 7px;
+    width: 100px;
+    height: 40px;
+    font-size: 18px;
+}

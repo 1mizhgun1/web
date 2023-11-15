@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+{% include 'components/question_component.html' %}
+
+<div class="answers">
+{% for answer in answers %}
+    <div class="answer">
+        <div class="row answer-data">
+            <div class="col-2">
+                <img src="{% static 'img/'|add:answer.avatar_filename %}" alt="a_ava" class="answer-image">
+            </div>
+            <div class="col-10">
+                <div class="answer-text">{{ answer.text }}</div>
+            </div>
+        </div>
+        <div class="row answer-info">
+            <div class="col-2 answer-likes">
+                <h5>likes: {{ answer.likes }}</h5>
+                <button class="button btn-success">Like!</button>
+                <button class="button btn-danger">Dislike!</button>
+            </div>
+            <div class="col-10 answer-correct">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="answer-correct-switch">
+                    <label class="form-check-label" for="answer-correct-switch"><h5>Does this answer help you?</h5></label>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+
+{% include 'components/paginator_component.html' %}
+
+<form method="post">
+    {% csrf_token %}
+    <textarea class="text-area-answer" maxlength="2048" name="answer" placeholder="Enter your answer here" rows="7" required></textarea>
+    <button id="answer-button" class="button btn-primary" type="submit">Answer!</button>
+</form>
+
+{% endblock %}

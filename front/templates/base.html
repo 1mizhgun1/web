@@ -1,0 +1,94 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Ask and Answer</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/question.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ask.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/settings.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/signup.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.css' %}">
+</head>
+
+<body>
+
+<header>
+    <div class="row">
+        <div class="col-3 head-title-wrap">
+            <a href="{% url 'index_url' %}" class="head-title">Ask and Answer</a>
+        </div>
+        <div class="col-6 head-form">
+        {% if template.log_in %}
+            <div class="row">
+                <div class="col-6 head-search-wrap">
+                    <input class="head-search" type="text" name="search" placeholder="Search">
+                </div>
+                <div class="col-3 head-ask-wrap">
+                    <form action="/ask">
+                        <button class="btn btn-primary" id="head-ask" type="submit">ASK!</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <input class="head-search" type="text" name="search" size="60" placeholder="Search">
+        {% endif %}
+        </div>
+        <div class="col-3 head-user">
+        {% block user %}
+        {% if template.log_in %}
+            <div class="row">
+                <div class="col-4 head-ava-wrap">
+                    <img class="head-ava" src="{% static 'img/ava.jpg' %}" alt="ava">
+                </div>
+                <div class="col-8 head-user-info">
+                    <h4 class="head-name">{{ template.username }}</h4>
+                    <a href="{% url 'settings_url' %}" class="head-settings">settings</a>
+                    <a href="{% url 'index_url' %}" class="head-logout">log out</a>
+                </div>
+            </div>
+        {% else %}
+            <a href="{% url 'login_url' %}" class="head-login">log in</a>
+            <a href="{% url 'register_url' %}" class="head-register">register</a>
+        {% endif %}
+        {% endblock %}
+        </div>
+    </div>
+</header>
+
+<main class="flex-shrink-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-9 page-content">
+                {% block content %}{% endblock %}
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <h2 class="tags-title">Popular Tags</h2>
+                    <div class="tags">
+                    {% for tag in template.tags %}
+                        <span class="badge bg-{{ tag.color }}"><a href="{% url 'tag_url' tag.tag %}">{{ tag.tag }}</a></span>
+                    {% endfor %}
+                    </div>
+                </div>
+                <div class="row" id="members-block">
+                    <h2 class="members-title">Best Members</h2>
+                    <ul class="list-group">
+                    {% for member in template.members %}
+                        <li class="list-group-item"><a href="{% url 'index_url' %}"><h5>{{ member.display_name }}</h5></a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+
+</html>

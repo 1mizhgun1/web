@@ -1,0 +1,83 @@
+.page-content > .questions-title {
+    display: flex;
+}
+
+.questions-link {
+    margin-top: 10px;
+    margin-left: 70px;
+}
+
+.question > .question-info > .question-likes {
+    width: max-content;
+}
+
+.page-content > .questions {
+    padding-bottom: 30px;
+}
+
+.page-content > .questions > .question,
+.page-content > .question {
+    width: 93%;
+}
+
+.page-content > .question > .question-info > .question-answers {
+    display: none;
+}
+
+.questions > .question {
+    margin-top: 30px;
+    padding: 10px;
+    height: 260px;
+    border: 2px grey solid;
+    border-radius: 10px;
+}
+
+.questions > .question > .question-data > .col-10 > .question-text > p.clip {
+    max-height: 94px;
+    overflow: hidden;
+    text-overflow: clip;
+}
+
+.questions > .question > .question-data > .col-10 > .question-title > p.clip {
+    max-height: 36px;
+    overflow: hidden;
+    text-overflow: clip;
+}
+
+.question-image {
+    margin-top: 10px;
+    width: 120px;
+    height: auto;
+    border: 1px #4fae10 solid;
+    border-radius: 10px;
+}
+
+.question-title {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.question-title > a,
+.question-text > a {
+    text-decoration: none;
+    color: black;
+}
+
+.question > .question-info {
+    margin-top: 8px;
+}
+
+.question > .question-info > .question-answers,
+.question > .question-info > .question-tags {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.question-info > .question-tags {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.question-tags > .question-tag {
+    margin-left: 15px;
+}

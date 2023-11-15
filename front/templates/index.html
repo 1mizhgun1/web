@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <div class="questions-title">
+    {% if mode == 'new' %}
+        <h1>New Questions</h1>
+        <a href="{% url 'hot_url' %}" class="questions-link"><h4>Hot Questions</h4></a>
+    {% elif mode == 'best' %}
+        <h1>Hot Questions</h1>
+        <a href="{% url 'index_url' %}" class="questions-link"><h4>New Questions</h4></a>
+    {% else %}
+        <h1>Tag: {{ tag }}</h1>
+    {% endif %}
+    </div>
+
+<div class="questions">
+
+{% for question in questions %}
+    {% include 'components/question_component.html' %}
+{% endfor %}
+
+</div>
+    
+{% include 'components/paginator_component.html' %}
+
+{% endblock %}

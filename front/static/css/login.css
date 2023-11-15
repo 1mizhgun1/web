@@ -1,0 +1,33 @@
+.page-content > .login-form {
+    padding-bottom: 30px;
+}
+
+.page-content > .login-form > .row {
+    margin-top: 30px;
+}
+
+.page-content > .login-form > .row > .col-2 > h5 {
+    font-weight: 400;
+}
+
+.page-content > .login-form > .row > .col-8 {
+    display: flex;
+}
+
+.page-content > .login-form > .row > .col-8 > input {
+    width: 60%;
+}
+
+#login-button {
+    border-radius: 7px;
+    width: 100px;
+    height: 40px;
+    font-size: 18px;
+}
+
+.wrong-password {
+    color: red;
+    margin-left: 20px;
+    position: relative;
+    top: 5px;
+}

@@ -1,0 +1,31 @@
+{% load static %}
+
+<div class="question">
+    <div class="row question-data">
+        <div class="col-2">
+            <img src="{% static 'img/'|add:question.avatar_filename %}" alt="q_ava" class="question-image">
+        </div>
+        <div class="col-10">
+            <div class="question-title"><p class="clip">{{ question.title }}</p></div>
+            <div class="question-text"><p class="clip">{{ question.text }}</p></div>
+        </div>
+    </div>
+    <div class="row question-info">
+        <div class="col-3 question-likes">
+            <h5>likes: {{ question.likes }}</h5>
+            <button class="button btn-success">Like!</button>
+            <button class="button btn-danger">Dislike!</button>
+        </div>
+        <div class="col-3 question-answers">
+            <a href="{% url 'question_url' question.id %}" class="question-answers"><h5>answers: {{ question.answers }}</h5></a>
+        </div>
+        <div class="col-6 question-tags">
+        {% for tag in question.tags %}
+        {% if forloop.counter == 1 %}
+            <h5 class="question-tags-text">tags: </h5>
+        {% endif %}
+            <a href="{% url 'tag_url' tag %}" class="question-tag"><h6>{{ tag }}</h6></a>
+        {% endfor %}
+        </div>
+    </div>
+</div>

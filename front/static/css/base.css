@@ -1,0 +1,98 @@
+body {
+    font-family: "Open Sans", sans-serif;
+    overflow-x: hidden;
+}
+
+header {
+    height: 90px;
+    border-bottom: 7px #185f1f double;
+}
+
+.row > .head-title-wrap {
+    padding-left: 50px;
+    padding-top: 12px;
+}
+
+.head-title {
+    text-decoration: none;
+    font-size: 36px;
+    font-weight: bold;
+    color: #4fae10;
+}
+
+.head-title:hover {
+    color: #78c047;
+}
+
+.head-search {
+    font-size: 18px;
+    font-weight: 400;
+    width: 100%;
+    height: 30px;
+    position: relative;
+    margin-top: 29px;
+    border-radius: 15px;
+    padding: 10px;
+}
+
+#head-ask {
+    width: 100px;
+    height: 40px;
+    margin-top: 22px;
+}
+
+.head-user {
+    height: 73px;
+    padding-top: 6px;
+}
+
+.head-ava {
+    width: 70px;
+    height: auto;
+    border: 3px #4fae10 solid;
+    border-radius: 15px;
+}
+
+.head-logout,
+.head-register {
+    margin-left: 25px;
+}
+
+.head-login {
+    position: relative;
+    top: 25px;
+}
+
+.head-register {
+    position: relative;
+    top: 25px;
+}
+
+main > .container {
+    margin-top: 20px;
+}
+
+.row > .tags {
+    max-width: 300px;
+    margin-top: 15px;
+}
+
+.row > .tags > .badge {
+    margin-right: 7px;
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+
+.row > .tags > .badge > a {
+    text-decoration: none;
+    color: white;
+}
+
+#members-block {
+    margin-top: 60px;
+}
+
+#members-block > .list-group {
+    max-width: 300px;
+    margin-top: 15px;
+}

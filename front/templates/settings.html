@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <form method="post" class="settings-form">
+        {% csrf_token %}
+        <h1>Settings: {{ template.username }}</h1>
+        <div class="row">
+            <div class="col-2">
+                <h5>Login</h5>
+            </div>
+            <div class="col-8">
+                <input type="text" class="input-settings-login" maxlength="64" name="login" value="{{ template.login }}" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <h5>Email</h5>
+            </div>
+            <div class="col-8">
+                <input type="text" class="input-settings-email" maxlength="64" name="email" value="{{ template.email }}" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <h5>NickName</h5>
+            </div>
+            <div class="col-8">
+                <input type="text" class="input-settings-username" maxlength="64" name="username" value="{{ template.username }}" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <h5>Upload avatar</h5>
+            </div>
+            <div class="col-8">
+                <img class="input-settings-ava" src="{% static 'img/ava.jpg' %}" alt="ava">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="settings-new-ava">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <button id="settings-button" class="button btn-primary" type="submit">Save</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
