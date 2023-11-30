@@ -63,7 +63,7 @@ class User(AbstractUser):
     date_joined = models.DateTimeField(auto_now=True, verbose_name='дата создания аккаунта')
 
     # добавление связи с профилем
-    profile = models.OneToOneField(Profile, on_delete=models.PROTECT, verbose_name='id профиля')
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -81,7 +81,7 @@ class Question(models.Model):
     likes = models.IntegerField(default=0, verbose_name='количество лайков на вопросе')
     answers = models.IntegerField(default=0, verbose_name='количество ответов на вопрос')
     send = models.DateTimeField(auto_now=True, verbose_name='время отправки')
-    profile = models.ForeignKey(Profile, on_delete=models.PROTECT, verbose_name='id профиля')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
     
 
 class Answer(models.Model):
@@ -91,8 +91,8 @@ class Answer(models.Model):
     likes = models.IntegerField(default=0, verbose_name='количество лайков на ответе')
     help_count = models.IntegerField(default=0, verbose_name='сколько раз помог ответ')
     send = models.DateTimeField(auto_now=True, verbose_name='время отправки')
-    profile = models.ForeignKey(Profile, on_delete=models.PROTECT, verbose_name='id профиля')
-    question = models.ForeignKey(Question, on_delete=models.PROTECT, verbose_name='id вопроса')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='id вопроса')
 
 
 class Tag(models.Model):
@@ -105,8 +105,8 @@ class Tag(models.Model):
         return self.name
     
 class Link_QuestionTag(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.PROTECT, verbose_name='id вопроса')
-    tag = models.ForeignKey(Tag, on_delete=models.PROTECT, verbose_name='id тега')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='id вопроса')
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, verbose_name='id тега')
 
     class Meta:
         unique_together = (('question', 'tag'))
@@ -115,8 +115,8 @@ class Link_QuestionTag(models.Model):
 class QuestionLike(models.Model):
     send = models.DateTimeField(auto_now=True, verbose_name='время отправки')
     mark = models.IntegerField(choices=[(1, 'like'), (0, 'set_default'), (-1, 'dislike')], verbose_name='оценка')
-    profile = models.ForeignKey(Profile, on_delete=models.PROTECT, verbose_name='id профиля')
-    question = models.ForeignKey(Question, on_delete=models.PROTECT, verbose_name='id вопроса')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='id вопроса')
 
     class Meta:
         unique_together = (('profile', 'question'))
@@ -125,8 +125,8 @@ class QuestionLike(models.Model):
 class AnswerLike(models.Model):
     send = models.DateTimeField(auto_now=True, verbose_name='время отправки')
     mark = models.IntegerField(choices=[(1, 'like'), (0, 'set_default'), (-1, 'dislike')], verbose_name='оценка')
-    profile = models.ForeignKey(Profile, on_delete=models.PROTECT, verbose_name='id профиля')
-    answer = models.ForeignKey(Answer, on_delete=models.PROTECT, verbose_name='id ответа')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, verbose_name='id ответа')
 
     class Meta:
         unique_together = (('profile', 'answer'))

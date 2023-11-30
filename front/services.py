@@ -1,17 +1,13 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
+from django.contrib.auth.models import AnonymousUser
 from front.models import *
 from typing import Union
 import random
 
 
-IS_LOG_IN = True            # влияет на юзерблок в хэдере
-IS_WRONG_PASSWORD = True    # влияет на отображение ошибки в login.html
-IS_WRONG_EMAIL = True       # влияет на отображение ошибки в signup.html
-
-
-def getPageNumber(request: HttpRequest, total_pages: int) -> int:
+def getValidPageNumber(request: HttpRequest, total_pages: int) -> int:
     """Возращает валидный номер текущей страницы"""
     try:
         page_number = int(request.GET.get('page'))
@@ -28,17 +24,23 @@ def paginate(queryset: models.QuerySet, request: HttpRequest, per_page: int = 5)
     """Возвращает данные текущей страницы, а также общие сведения о страницах"""
     paginator = Paginator(queryset, per_page)
 
-    total_pages = queryset.count() // per_page
-    if len(queryset) % per_page != 0:
-        total_pages += 1
-    
-    page_number = getPageNumber(request, total_pages)
+    total_pages = paginator.num_pages
+    page_number = getValidPageNumber(request, total_pages)
 
     return {
         'page_data': paginator.get_page(page_number),
         'current_page': page_number,
         'total_pages': total_pages,
     }
+
+
+def getPageNumber(queryset: models.QuerySet, pk: int, per_page: int = 5) -> int:
+    """Возвращает номер страницы, на котором находится объект с первичным ключом pk"""
+    paginator = Paginator(queryset, per_page)
+    for page_number in range(paginator.num_pages, 0, -1):
+        if pk in [item.pk for item in paginator.get_page(page_number)]:
+            return page_number
+    return 1
 
 
 def getPopularTags():
@@ -63,13 +65,24 @@ def getTopMembers():
     return top_members
 
 
-def getTemplateData():
-    """Возвращает данные, необходимые для отображения шаблона всех страниц. Пока что данные пользователя захардкожены"""
+def getUserData(user: User):
+    """Возвращает данные, необходимые для отображения юзерблока"""
+    if isinstance(user, AnonymousUser):
+        return {
+            'log_in': False,
+        }
+    
     return {
-        'log_in': IS_LOG_IN,
-        'username': 'WEB 12',
-        'login': 'homework',
-        'email': 'web.12.vk@gmail.com',
+        'log_in': user.is_authenticated,
+        'first_name': user.first_name,
+        'avatar_filename': Profile.objects.get(user=user).avatar_filename,
+    }
+
+
+def getTemplateData(request: HttpRequest):
+    """Возвращает данные, необходимые для отображения шаблона всех страниц"""
+    return {
+        'user': getUserData(request.user),
         'tags': getPopularTags(),
         'members': getTopMembers()
     }

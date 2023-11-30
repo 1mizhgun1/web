@@ -1,29 +1,15 @@
-.page-content > .register-form {
+.register-form {
+    padding-top: 30px;
     padding-bottom: 30px;
+    width: 70%;
 }
 
-.page-content > .register-form > .row {
-    margin-top: 30px;
-}
-
-.page-content > .register-form > .row > .col-3 > h5 {
-    font-weight: 400;
-}
-
-.page-content > .register-form > .row > .col-7 {
-    display: flex;
-}
-
-.page-content > .register-form > .row > .col-7 > input {
-    width: 55%;
-}
-
-.input-register-ava {
+/* .input-register-ava {
     width: 120px;
     height: auto;
     border: 1px #4fae10 solid;
     border-radius: 10px;
-}
+} */
 
 #register-button {
     margin-bottom: 30px;
@@ -31,11 +17,4 @@
     width: 100px;
     height: 40px;
     font-size: 18px;
-}
-
-.wrong-email {
-    color: red;
-    margin-left: 20px;
-    position: relative;
-    top: 5px;
 }

@@ -24,11 +24,9 @@
     margin-top: 8px;
 }
 
-.text-area-answer {
+.answer-from {
     margin-top: 30px;
-    margin-bottom: 20px;
     width: 93%;
-    font-size: 18px;
 }
 
 #answer-button {

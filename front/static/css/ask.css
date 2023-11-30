@@ -1,17 +1,7 @@
 .page-content > .ask-form {
+    padding-top: 30px;
     padding-bottom: 30px;
-}
-
-.page-content > .ask-form > .row {
-    margin-top: 30px;
-}
-
-.page-content > .ask-form > .row > .col-1 > h5 {
-    font-weight: 400;
-}
-
-.page-content > .ask-form > .row > .col-9 > textarea {
-    width: 100%;
+    width: 93%;
 }
 
 #ask-button {

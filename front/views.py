@@ -1,17 +1,20 @@
-from django.http import Http404
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render
+from django.http import Http404, HttpRequest
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from front.models import *
 from front.services import *
+from front.forms import *
 
 
-def GetQuestions(request):
+def GetQuestions(request: HttpRequest):
     """Отображает страницу новых вопросов"""
     page_of_questions = paginate(Question.objects.new_questions(), request)
     addData_ToQuestions(page_of_questions['page_data'])
 
     return render(request, 'index.html', {
-        'template': getTemplateData(),
+        'template': getTemplateData(request),
         'questions': page_of_questions['page_data'],
         'current_page': page_of_questions['current_page'],
         'pages': page_of_questions['total_pages'],
@@ -20,13 +23,13 @@ def GetQuestions(request):
     })
 
 
-def GetBestQuestions(request):
+def GetBestQuestions(request: HttpRequest):
     """Отображает страницу топ-вопросов"""
     page_of_questions = paginate(Question.objects.best_questions(), request)
     addData_ToQuestions(page_of_questions['page_data'])
 
     return render(request, 'index.html', {
-        'template': getTemplateData(),
+        'template': getTemplateData(request),
         'questions': page_of_questions['page_data'],
         'current_page': page_of_questions['current_page'],
         'pages': page_of_questions['total_pages'],
@@ -35,7 +38,7 @@ def GetBestQuestions(request):
     })
 
 
-def GetQuestionsByTag(request, tagname: str):
+def GetQuestionsByTag(request: HttpRequest, tagname: str):
     """Отображает страницу вопросов по тегу"""
     try:
         tag = get_object_or_404(Tag, name=tagname)
@@ -47,7 +50,7 @@ def GetQuestionsByTag(request, tagname: str):
     addData_ToQuestions(page_of_questions['page_data'])
 
     return render(request, 'index.html', {
-        'template': getTemplateData(),
+        'template': getTemplateData(request),
         'questions': page_of_questions['page_data'],
         'current_page': page_of_questions['current_page'],
         'pages': page_of_questions['total_pages'],
@@ -56,7 +59,7 @@ def GetQuestionsByTag(request, tagname: str):
     })
 
 
-def GetQuestion(request, id: int):
+def GetQuestion(request: HttpRequest, id: int):
     """Отображает страницу одного вопроса"""
     try:
         question = get_object_or_404(Question, pk=id)
@@ -68,40 +71,96 @@ def GetQuestion(request, id: int):
     page_of_answers = paginate(answers, request)
     addData_ToAnswers(page_of_answers['page_data'])
 
+    answer_form = AnswerForm()
+    if request.method == 'POST':
+        answer_form = AnswerForm(request.POST)
+        if answer_form.is_valid():
+            answer = answer_form.save(request.user, question)
+            return redirect(f'{reverse("question_url", kwargs={"id": id})}?page={getPageNumber(answers, answer.pk)}')
+
     return render(request, 'question.html', {
-        'template': getTemplateData(),
+        'template': getTemplateData(request),
         'question': question,
         'answers': page_of_answers['page_data'],
         'current_page': page_of_answers['current_page'],
         'pages': page_of_answers['total_pages'],
+        'form': answer_form,
     })
 
 
-def GetSettings(request):
-    """Отображает страницу настроек"""
+@login_required(login_url='/login/', redirect_field_name='continue')
+def GetSettings(request: HttpRequest):
+    """Обработка формы изменения настроек"""
+    settings_form = SettingsForm()
+    if request.method == 'GET':
+        settings_form.initFields(request.user)
+    elif request.method == 'POST':
+        settings_form = SettingsForm(request.POST, request.FILES)
+        if settings_form.is_valid():
+            settings_form.save(request.user)
+            return redirect(request.META.get('HTTP_REFERER'))
+
     return render(request, 'settings.html', {
-        'template': getTemplateData(),
+        'template': getTemplateData(request),
+        'form': settings_form,
     })
 
 
-def RenderAskForm(request):
-    """Отображает форму создания вопроса"""
+@login_required(login_url='/login/', redirect_field_name='continue')
+def ask(request: HttpRequest):
+    """Обработка формы отправки вопроса"""
+    ask_form = AskForm()
+    if request.method == 'POST':
+        ask_form = AskForm(request.POST)
+        if ask_form.is_valid():
+            question = ask_form.save(request.user)
+            return redirect(reverse('question_url', kwargs={'id': question.pk}))
+
     return render(request, 'ask.html', {
-        'template': getTemplateData(),
+        'template': getTemplateData(request),
+        'form': ask_form,
     })
 
 
-def RenderLoginForm(request):
-    """Отображает форму авторизации"""
+def log_in(request: HttpRequest):
+    """Отбработка формы входа в аккаунт"""
+    login_form = LoginForm()
+    if request.method == 'POST':
+        login_form = LoginForm(request.POST)
+        if login_form.is_valid():
+            user = authenticate(request, **login_form.cleaned_data)
+            if user:
+                login(request, user)
+                return redirect(request.GET.get('continue', reverse('index_url')))
+            else:
+                login_form.add_error(None, "Wrong login or password")
+                login_form.add_error('username', '')
+                login_form.add_error('password', '')
+    
     return render(request, 'login.html', {
-        'template': getTemplateData(),
-        'is_wrong_password': IS_WRONG_PASSWORD,
+        'template': getTemplateData(request),
+        'form': login_form,
     })
 
 
-def RenderRegisterForm(request):
-    """Отображает форму регистрации"""
+@login_required(login_url='/login/', redirect_field_name='continue')
+def log_out(request: HttpRequest):
+    """Обработка выхода из аккаунта"""
+    logout(request)
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+def sign_up(request: HttpRequest):
+    """Обработка регистрации"""
+    register_form = RegisterForm()
+    if request.method == 'POST':
+        register_form = RegisterForm(request.POST)
+        if register_form.is_valid():
+            user = register_form.save()
+            if user:
+                return redirect(reverse('index_url'))
+
     return render(request, 'signup.html', {
-        'template': getTemplateData(),
-        'is_wrong_email': IS_WRONG_EMAIL,
+        'template': getTemplateData(request),
+        'form': register_form,
     })
