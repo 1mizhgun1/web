@@ -2,7 +2,9 @@ from django.http import Http404, HttpRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_protect
 from django.urls import reverse
+
 from front.models import *
 from front.services import *
 from front.forms import *
@@ -87,7 +89,7 @@ def GetQuestion(request: HttpRequest, id: int):
         'form': answer_form,
     })
 
-
+@csrf_protect
 @login_required(login_url='/login/', redirect_field_name='continue')
 def GetSettings(request: HttpRequest):
     """Обработка формы изменения настроек"""
@@ -106,6 +108,7 @@ def GetSettings(request: HttpRequest):
     })
 
 
+@csrf_protect
 @login_required(login_url='/login/', redirect_field_name='continue')
 def ask(request: HttpRequest):
     """Обработка формы отправки вопроса"""
@@ -143,6 +146,7 @@ def log_in(request: HttpRequest):
     })
 
 
+@csrf_protect
 @login_required(login_url='/login/', redirect_field_name='continue')
 def log_out(request: HttpRequest):
     """Обработка выхода из аккаунта"""
