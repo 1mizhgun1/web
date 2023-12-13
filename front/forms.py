@@ -45,24 +45,19 @@ class SettingsForm(forms.Form):
     email = forms.EmailField(widget=forms.EmailInput)
     first_name = forms.CharField()
     last_name = forms.CharField()
-    avatar = forms.FileField(widget=forms.FileInput, required=False)
+    avatar = forms.ImageField(widget=forms.FileInput, required=False)
 
     def initFields(self, user: User):
         """Заполняет поля текущими значениями"""
         self.fields['email'].initial = user.email
         self.fields['first_name'].initial = user.first_name
         self.fields['last_name'].initial = user.last_name
-
-    def clean(self):
-        if self.cleaned_data['avatar']:
-            if not self.cleaned_data['avatar'].name in os.listdir(BASE_DIR / 'front/static/img/'):
-                self.add_error('avatar', 'Sorry, now custom images is not available.')
         
     def save(self, user: User):
         """Сохраняет изменения"""
         if self.cleaned_data['avatar']:
             profile = Profile.objects.get(user=user)
-            profile.avatar_filename = self.cleaned_data['avatar'].name
+            profile.avatar = self.cleaned_data['avatar']
             profile.save()
 
         user.email = self.cleaned_data['email']

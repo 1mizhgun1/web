@@ -167,7 +167,7 @@ class Command(BaseCommand):
             for i in range(ratio):
                 answers.append(Answer(
                     text = fake.paragraph(nb_sentences=5),
-                    help_count = random.randint(0, 5),
+                    is_right = random.choice([True, False, False, False, False, False]),
                     send = str(fake.date_time_between_dates(datetime_start='-365d', datetime_end='-1d', tzinfo=pytz.UTC)),
                     profile = random.choice(profiles),
                     question = random.choice(questions)
@@ -189,12 +189,12 @@ class Command(BaseCommand):
                 AnswerLike.objects.bulk_create(answer_likes)
             self.stdout.write(self.style.SUCCESS(f'Answers - created {ratio * (chunk + 1)}. Answer likes - created {2 * ratio * (chunk + 1)}. {getTime(start_time)}{getEndOfLine(100, chunk)}'), ending='')
 
-        # заполнение счётчиков - сколько раз ответы пользователя помогли
+        # заполнение счётчиков - сколько лайков собрали ответы пользователя
         start_time = time.time()
         for profile in profiles:
-            profile.help_count = Answer.objects.filter(profile_id=profile.pk).aggregate(Sum('help_count'))['help_count__sum']
+            profile.likes = Answer.objects.filter(profile_id=profile.pk).aggregate(Sum('likes'))['likes__sum']
         with transaction.atomic():
-            Profile.objects.bulk_update(profiles, fields=['help_count'])
+            Profile.objects.bulk_update(profiles, fields=['likes'])
         self.stdout.write(self.style.SUCCESS(f'Profile counters - counted. {getTime(start_time)}'))
 
         # заполнение счётчиков - сколько раз тег упомянут в вопросах

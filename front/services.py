@@ -75,7 +75,7 @@ def getUserData(user: User):
     return {
         'log_in': user.is_authenticated,
         'first_name': user.first_name,
-        'avatar_filename': Profile.objects.get(user=user).avatar_filename,
+        'avatar_url': Profile.objects.get(user=user).avatar.url,
     }
 
 
@@ -88,10 +88,31 @@ def getTemplateData(request: HttpRequest):
     }
 
 
-def getAvatarFilename(entity: Union[Question, Answer]) -> str:
-    """Возвращает название файла аватарки вопроса либо ответа"""
+def getAvatarUrl(entity: Union[Question, Answer]) -> str:
+    """Возвращает ссылку на аватарку вопроса либо ответа"""
     profile = get_object_or_404(Profile, pk=entity.profile_id)
-    return profile.avatar_filename
+    return profile.avatar.url
+
+
+def checkIsAsker(user: User, question: Question) -> bool:
+    """Проверает, этому ли пользователю принадлежит вопрос"""
+    if isinstance(user, AnonymousUser):
+        return False
+    return question.profile == user.profile
+
+
+def checkIsMarked(user: User, entity: Union[Question, Answer]) -> tuple:
+    """Проверяет, есть ли лайк или дизлайк на вопросе/ответе"""
+    if isinstance(user, AnonymousUser):
+        return (False, False)
+    
+    if isinstance(entity, Question):
+        like_entities = QuestionLike.objects.filter(question=entity).filter(profile=user.profile)
+    else:
+        like_entities = AnswerLike.objects.filter(answer=entity).filter(profile=user.profile)
+    likes = like_entities.filter(mark=1)
+    dislikes = like_entities.filter(mark=-1)
+    return (likes.exists(), dislikes.exists())
 
 
 def addTags(questions: list[Question]) -> None:
@@ -100,28 +121,40 @@ def addTags(questions: list[Question]) -> None:
         question.tags = Tag.objects.get_tags_by_question(question)
 
 
-def addAvatarFilename(entities: list[Union[Question, Answer]]) -> None:
-    """добавляет названия файлов с аватарками к вопросам либо ответам"""
+def addAvatarUrl(entities: list[Union[Question, Answer]]) -> None:
+    """добавляет ссылки на аватарки к вопросам либо ответам"""
     for entity in entities:
-        entity.avatar_filename = getAvatarFilename(entity)
+        entity.avatar_url = getAvatarUrl(entity)
+        
+        
+def addMarkInfo(user: User, entities: list[Union[Question, Answer]]) -> None:
+    """добавляет сведения о лайках к вопросам либо ответам"""
+    for entity in entities:
+        info = checkIsMarked(user, entity)
+        entity.liked = info[0]
+        entity.disliked = info[1]
 
 
-def addData_ToQuestions(questions: Union[list[Question], Question]) -> None:
+def addData_ToQuestions(user: User, questions: Union[list[Question], Question]) -> None:
     """добавляет к вопросу/вопросам данные, которые нужны для отображения"""
     if isinstance(questions, Question):
         addTags([questions])
-        addAvatarFilename([questions])
+        addAvatarUrl([questions])
+        addMarkInfo(user, [questions])
     else:
         addTags(questions)
-        addAvatarFilename(questions)
+        addAvatarUrl(questions)
+        addMarkInfo(user, questions)
 
 
-def addData_ToAnswers(answers: Union[list[Answer], Answer]) -> None:
+def addData_ToAnswers(user: User, answers: Union[list[Answer], Answer]) -> None:
     """добавляет к ответу/ответам данные, которые нужны для отображения"""
     if isinstance(answers, Answer):
-        addAvatarFilename([answers])
+        addAvatarUrl([answers])
+        addMarkInfo(user, [answers])
     else:
-        addAvatarFilename(answers)
+        addAvatarUrl(answers)
+        addMarkInfo(user, answers)
 
 
 def show404(message: str) -> HttpResponse:

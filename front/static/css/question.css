@@ -42,3 +42,42 @@
     padding-top: 30px;
     border-top: 7px #185f1f double;
 }
+
+.button-like {
+    background-color: #7cdd3b;
+}
+
+.button-like:hover {
+    background-color: #58b619;
+}
+
+.button-dislike {
+    background-color: #ee6969;
+}
+
+.button-dislike:hover {
+    background-color: #bb2a2a;
+}
+
+.span-div {
+    margin-top: 5px;
+    display: flex;
+}
+
+.span-like {
+    width: 47px;
+    height: 5px;
+    background-color: #58b619;
+}
+
+.span-dislike {
+    margin-left: 5px;
+    width: 66px;
+    height: 5px;
+    background-color: #bb2a2a;
+}
+
+.right-answer-text {
+    color: #185f1f;
+    letter-spacing: 1px;
+}

@@ -43,7 +43,7 @@
         {% if template.user.log_in %}
             <div class="row">
                 <div class="col-4 head-ava-wrap">
-                    <img class="head-ava" src="{% static 'img/'|add:template.user.avatar_filename %}" alt="ava">
+                    <img class="head-ava" src="{{ template.user.avatar_url }}" alt="profile avatar">
                 </div>
                 <div class="col-8 head-user-info">
                     <h4 class="head-name">{{ template.user.first_name }}</h4>
@@ -86,6 +86,8 @@
         </div>
     </div>
 </main>
+
+<script src="{% static 'js/main.js' %}"></script>
 
 </body>
 

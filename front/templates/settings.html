@@ -13,7 +13,7 @@
         {% csrf_token %}
         {% bootstrap_form form %}
         <div>
-            <img class="input-settings-ava" src="{% static 'img/'|add:template.user.avatar_filename %}" alt="ava">
+            <img class="input-settings-ava" src="{{ template.user.avatar_url }}" alt="profile avatar">
         </div>
         <button id="settings-button" class="button btn-primary" type="submit">Save</button>
     </form>

@@ -3,7 +3,7 @@
 <div class="question">
     <div class="row question-data">
         <div class="col-2">
-            <img src="{% static 'img/'|add:question.avatar_filename %}" alt="q_ava" class="question-image">
+            <img src="{{ question.avatar_url }}" alt="question avatar" class="question-image">
         </div>
         <div class="col-10">
             <div class="question-title"><p class="clip">{{ question.title }}</p></div>
@@ -12,9 +12,23 @@
     </div>
     <div class="row question-info">
         <div class="col-3 question-likes">
-            <h5>likes: {{ question.likes }}</h5>
-            <button class="button btn-success">Like!</button>
-            <button class="button btn-danger">Dislike!</button>
+            <div>
+                <h5>likes: {{ question.likes }}</h5>
+                <button class="button-like" data-id="{{ question.pk }}">Like!</button>
+                <button class="button-dislike" data-id="{{ question.pk }}">Dislike!</button>
+            </div>
+            <div class="span-div">
+            {% if question.liked %}
+                <div class="span-like"></div>
+            {% else %}
+                <div class="span-like" style="visibility: hidden;"></div>
+            {% endif %}
+            {% if question.disliked %}
+                <div class="span-dislike"></div>
+            {% else %}
+                <div class="span-dislike" style="visibility: hidden;"></div>
+            {% endif %}
+            </div>
         </div>
         <div class="col-3 question-answers">
             <a href="{% url 'question_url' question.id %}" class="question-answers"><h5>answers: {{ question.answers }}</h5></a>

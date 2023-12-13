@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from front.views import *
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -15,4 +18,9 @@ urlpatterns = [
     path('login/', log_in, name='login_url'),
     path('logout/', log_out, name='logout_url'),
     path('signup/', sign_up, name='register_url'),
+    path('question_like/', question_like, name='question_like_url'),
+    path('answer_like/', answer_like, name='answer_like_url'),
+    path('answer_right/', answer_right, name='answer_right_url'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

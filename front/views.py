@@ -1,4 +1,4 @@
-from django.http import Http404, HttpRequest
+from django.http import Http404, HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -13,7 +13,7 @@ from front.forms import *
 def GetQuestions(request: HttpRequest):
     """Отображает страницу новых вопросов"""
     page_of_questions = paginate(Question.objects.new_questions(), request)
-    addData_ToQuestions(page_of_questions['page_data'])
+    addData_ToQuestions(request.user, page_of_questions['page_data'])
 
     return render(request, 'index.html', {
         'template': getTemplateData(request),
@@ -28,7 +28,7 @@ def GetQuestions(request: HttpRequest):
 def GetBestQuestions(request: HttpRequest):
     """Отображает страницу топ-вопросов"""
     page_of_questions = paginate(Question.objects.best_questions(), request)
-    addData_ToQuestions(page_of_questions['page_data'])
+    addData_ToQuestions(request.user, page_of_questions['page_data'])
 
     return render(request, 'index.html', {
         'template': getTemplateData(request),
@@ -49,7 +49,7 @@ def GetQuestionsByTag(request: HttpRequest, tagname: str):
 
     questions_with_tag = Question.objects.get_questions_by_tag(tag)
     page_of_questions = paginate(questions_with_tag, request)
-    addData_ToQuestions(page_of_questions['page_data'])
+    addData_ToQuestions(request.user, page_of_questions['page_data'])
 
     return render(request, 'index.html', {
         'template': getTemplateData(request),
@@ -67,11 +67,11 @@ def GetQuestion(request: HttpRequest, id: int):
         question = get_object_or_404(Question, pk=id)
     except:
         return show404(f'There is no question with id = {id}')
-    addData_ToQuestions(question)
+    addData_ToQuestions(request.user, question)
 
     answers = Answer.objects.get_answers_by_question(question)
     page_of_answers = paginate(answers, request)
-    addData_ToAnswers(page_of_answers['page_data'])
+    addData_ToAnswers(request.user, page_of_answers['page_data'])
 
     answer_form = AnswerForm()
     if request.method == 'POST':
@@ -87,6 +87,7 @@ def GetQuestion(request: HttpRequest, id: int):
         'current_page': page_of_answers['current_page'],
         'pages': page_of_answers['total_pages'],
         'form': answer_form,
+        'is_owner': checkIsAsker(request.user, question),
     })
 
 @csrf_protect
@@ -168,3 +169,42 @@ def sign_up(request: HttpRequest):
         'template': getTemplateData(request),
         'form': register_form,
     })
+    
+
+@csrf_protect
+@login_required(login_url='/login/', redirect_field_name='continue')
+def question_like(request: HttpRequest):
+    """Обработка лайка на вопрос"""   
+    id = request.POST.get('question_id')
+    try:
+        mark = int(request.POST.get('mark'))
+    except:
+        return show404(f'Invalid request')
+    question = get_object_or_404(Question, pk=id)
+    result = QuestionLike.objects.process_like(question, mark, request.user)
+    return JsonResponse({'likes': question.likes, 'result': result})
+
+
+@csrf_protect
+@login_required(login_url='/login/', redirect_field_name='continue')
+def answer_like(request):
+    """Обработка лайка на ответ"""
+    id = request.POST.get('answer_id')
+    try:
+        mark = int(request.POST.get('mark'))
+    except:
+        return show404('Invalid request')
+    answer = get_object_or_404(Answer, pk=id)
+    result = AnswerLike.objects.process_like(answer, mark, request.user)
+    return JsonResponse({'likes': answer.likes, 'result': result})
+
+
+@csrf_protect
+@login_required(login_url='/login/', redirect_field_name='continue')
+def answer_right(request):
+    """Обработка отметки того, что ответ верный"""
+    id = request.POST.get('answer_id')
+    answer = get_object_or_404(Answer, pk=id)
+    if checkIsAsker(request.user, answer.question):
+        Answer.objects.process_right(answer)
+    return JsonResponse({'is_right': answer.is_right})
