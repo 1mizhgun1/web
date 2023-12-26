@@ -21,6 +21,7 @@ urlpatterns = [
     path('question_like/', question_like, name='question_like_url'),
     path('answer_like/', answer_like, name='answer_like_url'),
     path('answer_right/', answer_right, name='answer_right_url'),
+    path('send_answer/<int:question_id>/', send_answer, name='send_answer'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

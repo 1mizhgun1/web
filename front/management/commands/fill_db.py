@@ -65,9 +65,7 @@ class Command(BaseCommand):
         # генерация профилей
         start_time = time.time()
         profiles = [
-            Profile(
-                avatar_filename = random.choice(['ava_1.jpg', 'ava_2.jpg', 'ava_3.jpg', 'ava_4.jpg', 'ava_5.jpg', 'ava_6.jpg', 'ava_7.jpg', 'ava_8.jpg', 'ava_9.jpg', 'ava_10.jpg']),
-            ) for i in range(ratio)
+            Profile() for i in range(ratio)
         ]
         with transaction.atomic():
             Profile.objects.bulk_create(profiles)

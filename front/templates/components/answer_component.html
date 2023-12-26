@@ -1,0 +1,49 @@
+{% load static %}
+
+<div class="answer">
+    <div class="row answer-data">
+        <div class="col-2">
+            <img src="{{ answer.avatar_url }}" alt="answer avatar" class="answer-image">
+        </div>
+        <div class="col-10">
+            <div class="answer-text">{{ answer.text }}</div>
+        </div>
+    </div>
+    <div class="row answer-info">
+        <div class="col-2 answer-likes">
+            <div>
+                <h5>likes: {{ answer.likes }}</h5>
+                <button class="button-like" data-id="{{ answer.pk }}">Like!</button>
+                <button class="button-dislike" data-id="{{ answer.pk }}">Dislike!</button>
+            </div>
+            <div class="span-div">
+            {% if answer.liked %}
+                <div class="span-like"></div>
+            {% else %}
+                <div class="span-like" style="visibility: hidden;"></div>
+            {% endif %}
+            {% if answer.disliked %}
+                <div class="span-dislike"></div>
+            {% else %}
+                <div class="span-dislike" style="visibility: hidden;"></div>
+            {% endif %}
+            </div>
+        </div>
+        <div class="col-10 answer-correct">
+            <div class="form-check form-switch">
+            {% if is_owner %}
+                {% if answer.is_right %}
+                    <input class="form-check-input" type="checkbox" id="answer-correct-switch" data-id="{{ answer.pk }}" checked>
+                {% else %}
+                    <input class="form-check-input" type="checkbox" id="answer-correct-switch" data-id="{{ answer.pk }}">
+                {% endif %}
+                    <label class="form-check-label" for="answer-correct-switch"><h5>Does this answer help you?</h5></label>
+            {% else %}
+                {% if answer.is_right %}
+                    <h5 class="right-answer-text">This answer marked as right</h5>
+                {% endif %}
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

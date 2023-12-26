@@ -1,6 +1,7 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
+from django.core.cache import cache
 from django.contrib.auth.models import AnonymousUser
 from front.models import *
 from typing import Union
@@ -43,14 +44,21 @@ def getPageNumber(queryset: models.QuerySet, pk: int, per_page: int = 5) -> int:
     return 1
 
 
-def getPopularTags():
-    """Возвращает данные о популярных тегах в том виде, в котором они нужны HTML-шаблону"""
-    return [
+def cache_popular_tags():
+    cache_key = 'popular_tags'
+    tags = [
         {
             'tag': tag.name,
             'color': random.choice(['success', 'primary', 'warning', 'danger', 'secondary'])
         } for tag in Tag.objects.popular_tags()[:15]
     ]
+    cache.set(cache_key, tags, 10)
+
+
+def getPopularTags():
+    """Возвращает данные о популярных тегах в том виде, в котором они нужны HTML-шаблону"""
+    cache_key = 'popular_tags'
+    return cache.get(cache_key)    
 
 
 def getTopMembers():

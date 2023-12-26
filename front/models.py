@@ -25,6 +25,7 @@ class TagManager(models.Manager):
     def popular_tags(self):
         """Возвращает теги, осортированные в порядке убывания количества вопросов, в которых они упомянуты"""
         return super().get_queryset().order_by('-questions')
+
     
     def get_tags_by_question(self, question):
         """Возвращает QuerySet тегов вопроса"""
@@ -41,7 +42,7 @@ class ProfileManager(models.Manager):
 class AnswerManager(models.Manager):
     def get_answers_by_question(self, question):
         """Возврашает QuerySet ответов на вопрос"""
-        return Answer.objects.filter(question=question).order_by('-likes')
+        return Answer.objects.filter(question=question).order_by('-send')
     
     def process_right(self, answer):
         """Обрабатывает переключение отметки о том, что ответ верный"""
@@ -117,7 +118,7 @@ class User(AbstractUser):
     is_superuser = models.BooleanField(default=False, verbose_name='Суперпользователь?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
     is_active = models.BooleanField(default=True, verbose_name='Активен?')
-    date_joined = models.DateTimeField(auto_now=True, verbose_name='дата создания аккаунта')
+    date_joined = models.DateTimeField(auto_now_add=True, verbose_name='дата создания аккаунта')
 
     # добавление связи с профилем
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
@@ -137,7 +138,7 @@ class Question(models.Model):
     text = models.TextField(max_length=4096, verbose_name='текст')
     likes = models.IntegerField(default=0, verbose_name='количество лайков на вопросе')
     answers = models.IntegerField(default=0, verbose_name='количество ответов на вопрос')
-    send = models.DateTimeField(auto_now=True, verbose_name='время отправки')
+    send = models.DateTimeField(auto_now_add=True, verbose_name='время отправки')
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
     
 
@@ -147,7 +148,7 @@ class Answer(models.Model):
     text = models.TextField(max_length=4096, verbose_name='текст')
     likes = models.IntegerField(default=0, verbose_name='количество лайков на ответе')
     is_right = models.BooleanField(default=False, verbose_name='отмечен ли ответ как верный')
-    send = models.DateTimeField(auto_now=True, verbose_name='время отправки')
+    send = models.DateTimeField(auto_now_add=True, verbose_name='время отправки')
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='id вопроса')
 
@@ -172,7 +173,7 @@ class Link_QuestionTag(models.Model):
 class QuestionLike(models.Model):
     objects = LikeManager()
     
-    send = models.DateTimeField(auto_now=True, verbose_name='время отправки')
+    send = models.DateTimeField(auto_now_add=True, verbose_name='время отправки')
     mark = models.IntegerField(choices=[(1, 'like'), (0, 'set_default'), (-1, 'dislike')], verbose_name='оценка')
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='id вопроса')
@@ -184,7 +185,7 @@ class QuestionLike(models.Model):
 class AnswerLike(models.Model):
     objects = LikeManager()
     
-    send = models.DateTimeField(auto_now=True, verbose_name='время отправки')
+    send = models.DateTimeField(auto_now_add=True, verbose_name='время отправки')
     mark = models.IntegerField(choices=[(1, 'like'), (0, 'set_default'), (-1, 'dislike')], verbose_name='оценка')
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, verbose_name='id ответа')

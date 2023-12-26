@@ -1,0 +1,9 @@
+gunicorn -c gunicorn_config.py simple_wsgi:simple_app
+curl -X POST -d "a=2&c=3&search=text" "http://localhost:8081/?a=1"
+
+ab -n 1000 -c 10 http://localhost:8000/static/img/ava_1.jpg
+ab -n 1000 -c 10 http://localhost:8081/static/img/ava_1.jpg
+ab -n 1000 -c 10 http://localhost:8081/profile
+ab -n 1000 -c 10 http://localhost/profie
+
+./centrifugo -p 8010 --config=config.json --admin

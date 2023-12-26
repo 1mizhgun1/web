@@ -36,7 +36,7 @@ class RegisterForm(forms.Form):
     def save(self) -> User:
         """Добавляет нового пользователя в базу"""
         self.cleaned_data.pop('password_again')
-        profile = Profile.objects.create(avatar_filename='ava.jpg')
+        profile = Profile.objects.create()
         return User.objects.create_user(**self.cleaned_data, profile=profile)
 
 

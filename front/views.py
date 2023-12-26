@@ -1,13 +1,33 @@
+from django.forms import model_to_dict
 from django.http import Http404, HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.urls import reverse
+from django.conf import settings as config
 
 from front.models import *
 from front.services import *
 from front.forms import *
+
+import jwt
+import time
+
+from cent import Client
+
+
+client = Client(config.CENTRIFUGO_API_URL, api_key=config.CENTRIFUGO_API_KEY, timeout=1)
+
+
+def getCentrifugoData(user_id: int, channel: str):
+    return {
+        'centrifugo': {
+            'token': jwt.encode({"sub": str(user_id), "exp": int(time.time()) + 10*60}, config.CENTRUFUGO_TOKEN_HMAC_SECRET_KEY, algorithm="HS256"),
+            'ws_url': config.CENTRIFUGO_URL,
+            'channel': channel,
+        }
+    }
 
 
 def GetQuestions(request: HttpRequest):
@@ -61,6 +81,28 @@ def GetQuestionsByTag(request: HttpRequest, tagname: str):
     })
 
 
+@csrf_protect
+@login_required(login_url='/login/', redirect_field_name='continue')
+def send_answer(request: HttpRequest, question_id: int):
+    """Обрабатывает отправку ответа на вопрос"""
+    if request.method == 'POST':
+        question = get_object_or_404(Question, pk=question_id)
+        answer_form = AnswerForm(request.POST)
+        print(request.POST)
+        if answer_form.is_valid():
+            answer = answer_form.save(request.user, question)
+            client.publish(f'question.{question_id}', model_to_dict(answer))
+            return JsonResponse({
+                'status': 'success',
+                'pk': answer.pk,
+                'text': answer.text,
+                'avatar_url': Profile.objects.get(user=request.user).avatar.url,
+                'likes': answer.likes,
+                'is_owner': checkIsAsker(request.user, question),
+            })
+    return JsonResponse({'statis': 'error'})
+
+
 def GetQuestion(request: HttpRequest, id: int):
     """Отображает страницу одного вопроса"""
     try:
@@ -70,15 +112,11 @@ def GetQuestion(request: HttpRequest, id: int):
     addData_ToQuestions(request.user, question)
 
     answers = Answer.objects.get_answers_by_question(question)
-    page_of_answers = paginate(answers, request)
+    page_of_answers = paginate(answers, request, 2)
     addData_ToAnswers(request.user, page_of_answers['page_data'])
 
     answer_form = AnswerForm()
-    if request.method == 'POST':
-        answer_form = AnswerForm(request.POST)
-        if answer_form.is_valid():
-            answer = answer_form.save(request.user, question)
-            return redirect(f'{reverse("question_url", kwargs={"id": id})}?page={getPageNumber(answers, answer.pk)}')
+    # return redirect(f'{reverse("question_url", kwargs={"id": id})}?page={getPageNumber(answers, answer.pk)}')
 
     return render(request, 'question.html', {
         'template': getTemplateData(request),
@@ -88,7 +126,9 @@ def GetQuestion(request: HttpRequest, id: int):
         'pages': page_of_answers['total_pages'],
         'form': answer_form,
         'is_owner': checkIsAsker(request.user, question),
+        **getCentrifugoData(request.user.pk, f'question.{id}'),
     })
+
 
 @csrf_protect
 @login_required(login_url='/login/', redirect_field_name='continue')

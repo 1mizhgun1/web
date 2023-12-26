@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="question">
+<div class="question" data-id="{{ question.pk }}">
     <div class="row question-data">
         <div class="col-2">
             <img src="{{ question.avatar_url }}" alt="question avatar" class="question-image">
