@@ -1,0 +1,3 @@
+SHELL = /bin/bash
+HOME = /
+* * * * * cd /home/mizhgun/projects/QA/web && source /home/mizhgun/projects/QA/web/venv/bin/activate && /home/mizhgun/projects/QA/web/venv/bin/python manage.py cache_template_data >> /home/mizhgun/cronlog.txt 2>&1
