@@ -3,6 +3,6 @@
   "admin_password": "c230806a-1361-4313-a404-358aa102310a",
   "admin_secret": "0ec41073-393c-45ca-81f9-234b9a9259a1",
   "api_key": "1ccd5026-9d7c-437e-ada9-d3cf1cf51a16",
-  "allowed_origins": ["http://127.0.0.1:8000", "http://127.0.0.1:8050"],
+  "allowed_origins": ["http://localhost:8000"],
   "allow_subscribe_for_client": true
 }

@@ -21,9 +21,11 @@ client = Client(config.CENTRIFUGO_API_URL, api_key=config.CENTRIFUGO_API_KEY, ti
 
 
 def getCentrifugoData(user_id: int, channel: str):
+    token = jwt.encode({"sub": str(user_id), "exp": int(time.time()) + 10*60}, config.CENTRUFUGO_TOKEN_HMAC_SECRET_KEY, algorithm="HS256")
+    print(user_id, token)
     return {
         'centrifugo': {
-            'token': jwt.encode({"sub": str(user_id), "exp": int(time.time()) + 10*60}, config.CENTRUFUGO_TOKEN_HMAC_SECRET_KEY, algorithm="HS256"),
+            'token': token,
             'ws_url': config.CENTRIFUGO_URL,
             'channel': channel,
         }
@@ -99,7 +101,7 @@ def send_answer(request: HttpRequest, question_id: int):
                 'likes': answer.likes,
                 'is_owner': checkIsAsker(request.user, question),
             })
-    return JsonResponse({'statis': 'error'})
+    return JsonResponse({'status': 'error'})
 
 
 def GetQuestion(request: HttpRequest, id: int):
