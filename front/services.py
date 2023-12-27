@@ -52,7 +52,7 @@ def cache_popular_tags():
             'color': random.choice(['success', 'primary', 'warning', 'danger', 'secondary'])
         } for tag in Tag.objects.popular_tags()[:15]
     ]
-    cache.set(cache_key, tags, 10)
+    cache.set(cache_key, tags, 30)
 
 
 def getPopularTags():
@@ -61,8 +61,8 @@ def getPopularTags():
     return cache.get(cache_key)    
 
 
-def getTopMembers():
-    """Возвращает данные о топ-пользователях в том виде, в котором они нужны HTML-шаблону"""
+def cache_top_members():
+    cache_key = 'top_members'
     top_members = []
     for member in Profile.objects.top_profiles()[:10]:
         current_user = User.objects.get(profile=member)
@@ -70,7 +70,13 @@ def getTopMembers():
             'username': current_user.username,
             'display_name': current_user.first_name + ' ' + current_user.last_name
         })
-    return top_members
+    cache.set(cache_key, top_members, 30)
+
+
+def getTopMembers():
+    """Возвращает данные о топ-пользователях в том виде, в котором они нужны HTML-шаблону"""
+    cache_key = 'top_members'
+    return cache.get(cache_key)
 
 
 def getUserData(user: User):

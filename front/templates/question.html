@@ -36,6 +36,7 @@
     sub.on('subscribed', function (ctx) {
         console.log('subscribed', ctx);
     }).on('publication', function(message) {
+        console.log('message', message.data);
         const answer = message.data;
         if (!answer.avatar_url) {
             answer.avatar_url = "/uploads/ava.jpg";
@@ -85,7 +86,9 @@
         `
 
         $answerList.prepend(answerElem);
-        $answerList.children().last().remove();
+        if ($answerList.length >= 1) {
+            $answerList.children().last().remove();
+        }
     }).subscribe();
 </script>
 

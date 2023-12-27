@@ -88,7 +88,6 @@ def send_answer(request: HttpRequest, question_id: int):
     if request.method == 'POST':
         question = get_object_or_404(Question, pk=question_id)
         answer_form = AnswerForm(request.POST)
-        print(request.POST)
         if answer_form.is_valid():
             answer = answer_form.save(request.user, question)
             client.publish(f'question.{question_id}', model_to_dict(answer))

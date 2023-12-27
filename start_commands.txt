@@ -1,0 +1,9 @@
+1. gunicorn
+gunicorn -c gunicorn_config.py simple_wsgi:simple_app
+curl -X POST -d "a=2&c=3&search=text" "http://localhost:8081/?a=1"
+
+2. centrifugo
+./centrifugo -p 8040 --config=config.json --admin
+
+3. django app
+python manage.py runserver ИЛИ python manage.py runserver 127.0.0.1:8050

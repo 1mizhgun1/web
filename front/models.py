@@ -1,5 +1,8 @@
 from django.db import models
+from django.db.models import Count, Q, Max, Func
 from django.contrib.auth.models import AbstractUser
+
+from datetime import datetime, timedelta
 
 
 # ==================================================================================================
@@ -23,8 +26,10 @@ class QuestionManager(models.Manager):
 
 class TagManager(models.Manager):
     def popular_tags(self):
-        """Возвращает теги, осортированные в порядке убывания количества вопросов, в которых они упомянуты"""
-        return super().get_queryset().order_by('-questions')
+        """Возвращает теги, осортированные в порядке убывания количества вопросов, в которых они упомянуты.
+        Учитываются только вопросы за последние 3 месяца"""
+        start_time = datetime.now() - timedelta(days=90)
+        return super().get_queryset().annotate(num_questions=Count('link_questiontag__question', filter=Q(link_questiontag__question__send__gte=start_time))).order_by('-num_questions')
 
     
     def get_tags_by_question(self, question):
@@ -35,8 +40,18 @@ class TagManager(models.Manager):
 
 class ProfileManager(models.Manager):
     def top_profiles(self):
-        """Возращает пользователей отсортированных убыванию количества лайков, которое собрал их профиль"""
-        return super().get_queryset().order_by('-likes')
+        """Возращает пользователей отсортированных по количеству лайков их самого популярного вопроса либо ответа.
+        Учитываются только вопросы и ответы за последнюю неделю."""
+        start_time = datetime.now() - timedelta(days=7)
+        return super().get_queryset().annotate(
+            max_likes=Func(
+                Max('question__likes', filter=Q(question__send__gte=start_time)),
+                Max('answer__likes', filter=Q(answer__send__gte=start_time)),
+                function='GREATEST'
+            ),
+            num_questions=Count('question'),
+            num_answers=Count('answer')
+        ).exclude(num_questions=0, num_answers=0).order_by('-max_likes')
     
 
 class AnswerManager(models.Manager):
@@ -139,7 +154,7 @@ class Question(models.Model):
     likes = models.IntegerField(default=0, verbose_name='количество лайков на вопросе')
     answers = models.IntegerField(default=0, verbose_name='количество ответов на вопрос')
     send = models.DateTimeField(auto_now_add=True, verbose_name='время отправки')
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='question', verbose_name='id профиля')
     
 
 class Answer(models.Model):
@@ -149,7 +164,7 @@ class Answer(models.Model):
     likes = models.IntegerField(default=0, verbose_name='количество лайков на ответе')
     is_right = models.BooleanField(default=False, verbose_name='отмечен ли ответ как верный')
     send = models.DateTimeField(auto_now_add=True, verbose_name='время отправки')
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='id профиля')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='answer', verbose_name='id профиля')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='id вопроса')
 
 
